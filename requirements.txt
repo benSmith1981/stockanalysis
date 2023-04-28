@@ -4,6 +4,7 @@ vaderSentiment
 Werkzeug==2.2.2
 textblob
 praw
+gunicorn
 requests
 vaderSentiment
 pandas==1.5.3
