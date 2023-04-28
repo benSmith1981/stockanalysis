@@ -1,0 +1,15 @@
+yfinance
+beautifulsoup4==4.11.2
+vaderSentiment
+Werkzeug==2.2.2
+textblob
+praw
+requests
+vaderSentiment
+pandas==1.5.3
+datetime
+python-dotenv==0.21.1
+numpy==1.24.1
+openai==0.26.4
+flask_cors
+Flask==2.2.2

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Simulator</title>
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        /* Override Bootstrap styles as needed */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    
+        nav {
+            background-color: #333;
+            overflow: hidden;
+            padding: 10px 20px;
+        }
+    
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+        }
+    
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+    
+        .container {
+            margin: 20px;
+        }
+    
+        .strategy-explanation {
+            display: none;
+        }
+    
+        .strategy-explanation.active {
+            display: block;
+        }
+    </style>
+    
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <h1 class="mt-3 mb-4">Stock Market Simulator</h1>
+        <form action="/simulate" method="post">
+            <div class="mb-3">
+                <label for="investment" class="form-label">Initial investment amount:</label>
+                <input type="number" id="investment" name="investment" value="{{ investment }}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="years" class="form-label">Years of stock data to simulate over:</label>
+                <input type="number" id="years" name="years" value="{{ years }}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="symbol" class="form-label">Stock symbol:</label>
+                <input type="text" id="symbol" name="symbol" value="{{ symbol }}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="strategy" class="form-label">Strategy:</label>
+                <select id="strategy" name="strategy" class="form-select" required>
+                    <option value="50_day_ma">50-Day Moving Average</option>
+                    <option value="ema_crossover">EMA Crossover</option>
+                    <option value="rsi">Relative Strength Index (RSI)</option>
+                    <option value="bollinger_bands">Bollinger Bands</option>
+                </select>
+            </div>
+            <div id="strategy-explanations" class="mb-3">
+                <div class="strategy-explanation card bg-light" data-strategy="50_day_ma">
+                    <div class="card-body">
+                        <h5 class="card-title">50-Day Moving Average</h5>
+                        <p class="card-text">The 50-Day Moving Average strategy involves calculating the average of the previous 50 days' stock prices. A buy signal is generated when the stock price crosses above the moving average, and a sell signal is generated when it crosses below the moving average.</p>
+                    </div>
+                </div>
+                <div class="strategy-explanation card bg-light" data-strategy="ema_crossover">
+                    <div class="card-body">
+                        <h5 class="card-title">EMA Crossover</h5>
+                        <p class="card-text">The EMA Crossover strategy uses two exponential moving averages, one short-term (e.g., 12 days) and one long-term (e.g., 26 days). A buy signal is generated when the short-term EMA crosses above the long-term EMA, and a sell signal is generated when the short-term EMA crosses below the long-term EMA.</p>
+                    </div>
+                </div>
+                <div class="strategy-explanation card bg-light" data-strategy="rsi">
+                    <div class="card-body">
+                        <h5 class="card-title">Relative Strength Index (RSI)</h5>
+                        <p class="card-text">The Relative Strength Index (RSI) is a momentum indicator that measures the speed and change of price movements on a scale of 0 to 100. A stock is considered overbought when the RSI is above 70 (sell signal) and oversold when the RSI is below 30 (buy signal).</p>
+                    </div>
+                </div>
+                <div class="strategy-explanation card bg-light" data-strategy="bollinger_bands">
+                    <div class="card-body">
+                        <h5 class="card-title">Bollinger Bands</h5>
+                        <p class="card-text">Bollinger Bands are volatility bands placed above and below a moving average. The upper and lower bands are typically set two standard deviations away from the moving average. A buy signal is generated when the stock price touches the lower band, and a sell signal is generated when it touches the upper band.</p>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" value="Simulate">
+        </form>
+        {% if profits %}
+            <h2 class="mt-4 mb-3">Simulation Results</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for strategy, profit in profits.items() %}
+                        <tr>
+                            <td>{{ strategy }}</td>
+                            <td>${{ profit|round(2, 'floor') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        <script>
+            const strategySelect = document.getElementById('strategy');
+            const strategyExplanation = document.getElementsByClassName('strategy-explanation');
+            
+            function updateStrategyExplanation() {
+                for (let i = 0; i < strategyExplanation.length; i++) {
+                    if (strategyExplanation[i].getAttribute('data-strategy') === strategySelect.value) {
+                        strategyExplanation[i].classList.add('active');
+                    } else {
+                        strategyExplanation[i].classList.remove('active');
+                    }
+                }
+            }
+        
+            strategySelect.addEventListener('change', updateStrategyExplanation);
+        
+            updateStrategyExplanation();
+        </script>
+    </body>
+</html>            
